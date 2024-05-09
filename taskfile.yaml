@@ -1,0 +1,12 @@
+version: '3'
+
+tasks:
+  up:
+    silent: true
+    cmds:
+      - docker-compose up -d
+
+  down:
+    silent: true
+    cmds:
+      - docker-compose down
