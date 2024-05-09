@@ -10,3 +10,8 @@ tasks:
     silent: true
     cmds:
       - docker-compose down
+
+  phpstan:
+    silent: true
+    cmds:
+      - composer phpstan
