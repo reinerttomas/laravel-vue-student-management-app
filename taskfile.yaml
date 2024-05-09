@@ -15,3 +15,23 @@ tasks:
     silent: true
     cmds:
       - composer phpstan
+
+  ccs:
+    silent: true
+    cmds:
+      - composer ccs
+
+  fcs:
+    silent: true
+    cmds:
+      - composer fcs
+
+  test:
+    silent: true
+    cmds:
+      - composer test
+
+  ci:
+    silent: true
+    cmds:
+      - composer ci

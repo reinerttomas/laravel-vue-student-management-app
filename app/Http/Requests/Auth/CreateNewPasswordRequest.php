@@ -8,7 +8,7 @@ use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
 /**
- * @property string $email
+ * @property string|null $email
  */
 class CreateNewPasswordRequest extends FormRequest
 {
@@ -23,7 +23,7 @@ class CreateNewPasswordRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'email' => 'required|email',
+            'email' => 'email',
         ];
     }
 }
