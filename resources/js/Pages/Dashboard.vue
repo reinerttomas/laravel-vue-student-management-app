@@ -1,6 +1,11 @@
 <script setup>
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head } from '@inertiajs/vue3';
+import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
+import PrimaryButton from '@/Components/PrimaryButton.vue';
+import { useDark, useToggle } from '@vueuse/core';
+
+const isDark = useDark();
+const toggleDark = useToggle(isDark);
 </script>
 
 <template>
@@ -22,6 +27,7 @@ import { Head } from '@inertiajs/vue3';
         >
           <div class="p-6 text-gray-900 dark:text-gray-100">
             You're logged in!
+            <PrimaryButton @click="toggleDark()">Click</PrimaryButton>
           </div>
         </div>
       </div>
