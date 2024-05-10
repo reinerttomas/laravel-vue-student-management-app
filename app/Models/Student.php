@@ -14,6 +14,8 @@ class Student extends Model
 
     protected $fillable = ['class_id', 'section_id', 'name', 'email'];
 
+    protected $with = ['class', 'section'];
+
     /**
      * @return BelongsTo<Classes, Student>
      */

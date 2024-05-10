@@ -23,7 +23,7 @@ class StudentFactory extends Factory
             'class_id' => Classes::factory(),
             'section_id' => Section::factory(),
             'name' => $this->faker->name(),
-            'email' => $this->faker->email(),
+            'email' => $this->faker->unique()->email(),
         ];
     }
 }
