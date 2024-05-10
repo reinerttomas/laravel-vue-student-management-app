@@ -13,7 +13,7 @@ class StudentController extends Controller
 {
     public function index(): Response
     {
-        $students = StudentResource::collection(Student::all());
+        $students = StudentResource::collection(Student::paginate(10));
 
         return Inertia::render('Student/Index', [
             'students' => $students,

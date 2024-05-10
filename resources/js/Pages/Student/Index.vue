@@ -1,6 +1,7 @@
 <script setup>
 import { Search } from 'lucide-vue-next';
 import { formatDate } from '@vueuse/core';
+import Pagination from '@/Components/Pagination.vue';
 
 defineProps({
   students: {
@@ -160,7 +161,7 @@ defineProps({
                   </tbody>
                 </table>
               </div>
-              <div class="mt-5">Links</div>
+              <Pagination :meta="students.meta" />
             </div>
           </div>
         </div>
