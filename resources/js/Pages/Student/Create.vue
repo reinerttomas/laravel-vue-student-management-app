@@ -1,6 +1,8 @@
 <script setup>
-import { Head } from '@inertiajs/vue3';
+import { Head, useForm } from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
+import { ref, watch } from 'vue';
+import axios from 'axios';
 
 defineProps({
   classes: {
@@ -8,6 +10,28 @@ defineProps({
     required: true,
   },
 });
+
+const sections = ref({});
+
+const form = useForm({
+  name: '',
+  email: '',
+  class_id: '',
+  section_id: '',
+});
+
+const getSections = async (classId) => {
+  const { data } = await axios.get('/api/sections?class_id=' + classId);
+  sections.value = data;
+  form.section_id = '';
+};
+
+watch(
+  () => form.class_id,
+  (newValue) => {
+    getSections(newValue);
+  }
+);
 </script>
 
 <template>
@@ -44,6 +68,7 @@ defineProps({
                       >Name</label
                     >
                     <input
+                      v-model="form.name"
                       type="text"
                       id="name"
                       class="@error('name') @enderror mt-1 block w-full rounded-md border border-gray-300 border-red-300 px-3 py-2 text-red-900 shadow-sm focus:border-indigo-500 focus:border-red-500 focus:outline-none focus:ring-indigo-500 focus:ring-red-500 sm:text-sm"
@@ -58,6 +83,7 @@ defineProps({
                       >Email Address</label
                     >
                     <input
+                      v-model="form.email"
                       type="email"
                       id="email"
                       autocomplete="email"
@@ -72,6 +98,7 @@ defineProps({
                       >Class</label
                     >
                     <select
+                      v-model="form.class_id"
                       id="class_id"
                       class="@error('class_id') @enderror mt-1 block w-full rounded-md border border-gray-300 border-red-300 bg-white px-3 py-2 text-red-900 shadow-sm focus:border-indigo-500 focus:border-red-500 focus:outline-none focus:ring-indigo-500 focus:ring-red-500 sm:text-sm"
                     >
@@ -93,11 +120,18 @@ defineProps({
                       >Section</label
                     >
                     <select
+                      v-model="form.section_id"
                       id="section_id"
                       class="@error('section_id') @enderror mt-1 block w-full rounded-md border border-gray-300 border-red-300 bg-white px-3 py-2 text-red-900 shadow-sm focus:border-indigo-500 focus:border-red-500 focus:outline-none focus:ring-indigo-500 focus:ring-red-500 sm:text-sm"
                     >
                       <option value="">Select a Section</option>
-                      <option value="1">Section A</option>
+                      <option
+                        v-for="section in sections"
+                        key="section.id"
+                        :value="section.id"
+                      >
+                        {{ section.name }}
+                      </option>
                     </select>
                   </div>
                 </div>
