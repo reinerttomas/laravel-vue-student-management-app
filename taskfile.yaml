@@ -2,36 +2,32 @@ version: '3'
 
 tasks:
   up:
-    silent: true
     cmds:
       - docker-compose up -d
 
   down:
-    silent: true
     cmds:
       - docker-compose down
 
   phpstan:
-    silent: true
     cmds:
-      - composer phpstan
+      - ./vendor/bin/phpstan analyse -c phpstan.neon --memory-limit 1G
 
-  ccs:
-    silent: true
+  pint:
     cmds:
-      - composer ccs
+      - ./vendor/bin/pint --config pint.json -v --test
 
-  fcs:
-    silent: true
+  pint:fix:
+    aliases: [fix]
     cmds:
-      - composer fcs
+      - ./vendor/bin/pint --config pint.json
 
   test:
-    silent: true
     cmds:
-      - composer test
+      - php artisan test {{.CLI_ARGS}}
 
   ci:
-    silent: true
     cmds:
-      - composer ci
+      - task: phpstan
+      - task: pint
+      - task: test
