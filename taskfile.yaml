@@ -26,8 +26,17 @@ tasks:
     cmds:
       - php artisan test {{.CLI_ARGS}}
 
+  prettier:
+    cmds:
+      - npm run format
+
+  prettier:fix:
+    cmds:
+      - npm run format:fix
+
   ci:
     cmds:
       - task: phpstan
       - task: pint
       - task: test
+      - task: prettier
