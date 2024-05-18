@@ -4,11 +4,19 @@ declare(strict_types=1);
 
 use App\Models\Classes;
 
-use function Pest\Laravel\getJson;
-
 test('can fetch sections by class', function () {
     $class = Classes::factory()->create();
 
-    $response = getJson('/api/sections?classId=' . $class->id);
-    $response->assertStatus(200);
+    $this
+        ->getJson('/api/sections?class_id=' . $class->id)
+        ->assertOk();
+});
+
+test('cannot fetch sections without class', function () {
+    $this
+        ->getJson('/api/sections')
+        ->assertUnprocessable()
+        ->assertJsonValidationErrors([
+            'class_id' => 'The class id field is required.',
+        ]);
 });

@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use App\Data\StoreStudentData;
 use App\Http\Resources\StudentResource;
 use App\Models\Classes;
 use App\Models\Student;
+use Illuminate\Http\RedirectResponse;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -28,5 +30,12 @@ class StudentController extends Controller
         return Inertia::render('Student/Create', [
             'classes' => $classes,
         ]);
+    }
+
+    public function store(StoreStudentData $data): RedirectResponse
+    {
+        Student::create($data->all());
+
+        return redirect()->route('students.index');
     }
 }

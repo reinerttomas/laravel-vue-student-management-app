@@ -14,7 +14,7 @@ class SectionListData extends Data
     public function __construct(
         #[Required]
         #[Exists(Classes::class, 'id')]
-        public int $classId
+        public int $class_id
     ) {
     }
 }

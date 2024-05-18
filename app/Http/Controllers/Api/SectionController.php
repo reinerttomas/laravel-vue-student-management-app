@@ -16,7 +16,7 @@ class SectionController extends Controller
 {
     public function __invoke(SectionListData $data): JsonResponse
     {
-        $sections = Section::where('class_id', $data->classId)->get();
+        $sections = Section::where('class_id', $data->class_id)->get();
 
         return response()->json(SectionResource::collection($sections));
     }
