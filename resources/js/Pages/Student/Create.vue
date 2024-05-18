@@ -21,7 +21,7 @@ const form = useForm({
 });
 
 const getSections = async (classId) => {
-  const { data } = await axios.get('/api/sections?class_id=' + classId);
+  const { data } = await axios.get('/api/sections?classId=' + classId);
   sections.value = data;
   form.section_id = '';
 };
