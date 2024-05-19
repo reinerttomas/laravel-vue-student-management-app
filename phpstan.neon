@@ -2,10 +2,3 @@ parameters:
 	level: 9
 	paths:
 		- app
-		- tests
-
-	ignoreErrors:
-	    -
-	        message: '#^Undefined variable: \$this$#'
-	        paths:
-	            - tests/*
