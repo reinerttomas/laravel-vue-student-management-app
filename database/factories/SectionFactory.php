@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Database\Factories;
 
+use App\Models\Classes;
 use App\Models\Section;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -18,7 +19,8 @@ class SectionFactory extends Factory
     public function definition(): array
     {
         return [
-            'name' => 'Section' . $this->faker->randomLetter(),
+            'class_id' => Classes::factory(),
+            'name' => 'Section ' . $this->faker->randomLetter(),
         ];
     }
 }

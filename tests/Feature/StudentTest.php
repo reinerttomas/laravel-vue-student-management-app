@@ -25,13 +25,24 @@ test('cannot show students page when user not authenticated', function () {
 });
 
 test('can show student create page', function () {
+    Classes::factory()
+        ->count(3)
+        ->create();
+
     $user = User::factory()->create();
 
     $this
         ->actingAs($user)
         ->get('/students/create')
         ->assertOk()
-        ->assertInertia(fn (Assert $page) => $page->component('Student/Create'));
+        ->assertInertia(fn (Assert $page) => $page->component('Student/Create')
+            ->has('classes', fn (Assert $page) => $page
+                ->has('data', 3, fn (Assert $page) => $page
+                    ->has('id')
+                    ->has('name')
+                )
+            )
+        );
 });
 
 test('cannot show student create page when user not authenticated', function () {
@@ -42,15 +53,7 @@ test('cannot show student create page when user not authenticated', function () 
 
 test('can create student', function () {
     $user = User::factory()->create();
-    $class = Classes::factory()->create();
-    $section = Section::factory()->create([
-        'class_id' => $class->id,
-    ]);
-
-    $student = Student::factory()->raw([
-        'class_id' => $class->id,
-        'section_id' => $section->id,
-    ]);
+    $student = Student::factory()->raw();
 
     $this
         ->followingRedirects()
@@ -81,4 +84,71 @@ test('cannot create student when required fields not provided', function () {
         );
 
     $this->assertDatabaseCount(Student::class, 0);
+});
+
+test('can show student edit page', function () {
+    $user = User::factory()->create();
+    $student = Student::factory()->create();
+
+    $this
+        ->actingAs($user)
+        ->get("/students/$student->id/edit")
+        ->assertOk()
+        ->assertInertia(fn (Assert $page) => $page->component('Student/Edit')
+            ->has('student', fn (Assert $page) => $page
+                ->has('data', fn (Assert $page) => $page
+                    ->where('id', $student->id)
+                    ->where('name', $student->name)
+                    ->where('email', $student->email)
+                    ->has('class', fn (Assert $page) => $page
+                        ->where('id', $student->class->id)
+                        ->where('name', $student->class->name)
+                    )
+                    ->has('section', fn (Assert $page) => $page
+                        ->where('id', $student->section->id)
+                        ->where('name', $student->section->name)
+                    )
+                    ->etc()
+                )
+            )
+            ->has('classes', fn (Assert $page) => $page
+                ->has('data', 1, fn (Assert $page) => $page
+                    ->has('id')
+                    ->has('name')
+                )
+            )
+        );
+});
+
+test('cannot show student edit page when user not authenticated', function () {
+    $student = Student::factory()->create();
+
+    $this
+        ->get("/students/$student->id/edit")
+        ->assertRedirectToRoute('login');
+});
+
+test('can update student', function () {
+    $user = User::factory()->create();
+    $student = Student::factory()->create();
+
+    $sectionForUpdate = Section::factory()->create();
+    $dataForUpdate = [
+        'name' => 'student',
+        'email' => 'student@example.com',
+        'class_id' => $sectionForUpdate->class_id,
+        'section_id' => $sectionForUpdate->id,
+    ];
+
+    $this
+        ->followingRedirects()
+        ->actingAs($user)
+        ->put(route('students.update', $student->id), $dataForUpdate)
+        ->assertOk()
+        ->assertInertia(fn (Assert $page) => $page
+            ->where('errors', [])
+        );
+
+    $this->assertDatabaseCount(Student::class, 1);
+    $this->assertDatabaseHas(Student::class, $dataForUpdate);
 });

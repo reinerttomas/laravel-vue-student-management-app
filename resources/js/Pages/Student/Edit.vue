@@ -1,7 +1,7 @@
 <script setup>
-import { Head, useForm } from '@inertiajs/vue3';
+import { Head, Link, useForm, usePage } from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { ref, watch } from 'vue';
+import { onMounted, ref, watch } from 'vue';
 import axios from 'axios';
 import InputError from '@/Components/InputError.vue';
 
@@ -10,26 +10,34 @@ defineProps({
     type: Object,
     required: true,
   },
+  student: {
+    type: Object,
+    required: true,
+  },
 });
 
+const student = usePage().props.student.data;
 const sections = ref({});
 
 const form = useForm({
-  name: '',
-  email: '',
-  class_id: '',
-  section_id: '',
+  name: student.name,
+  email: student.email,
+  class_id: student.class.id,
+  section_id: student.section.id,
 });
 
 const getSections = async (class_id) => {
   const { data } = await axios.get('/api/sections?class_id=' + class_id);
   sections.value = data;
-  form.section_id = '';
 };
 
-const createStudent = () => {
-  form.post(route('students.store'));
+const updateStudent = () => {
+  form.put(route('students.update', student.id));
 };
+
+onMounted(() => {
+  getSections(form.class_id);
+});
 
 watch(
   () => form.class_id,
@@ -40,20 +48,20 @@ watch(
 </script>
 
 <template>
-  <Head title="Create Student" />
+  <Head title="Update Student" />
 
   <AuthenticatedLayout>
     <template #header>
       <h2
         class="text-xl font-semibold leading-tight text-gray-800 dark:text-gray-200"
       >
-        Create Student
+        Update Student
       </h2>
     </template>
     <div class="mx-auto max-w-7xl py-6 sm:px-6 lg:px-8">
       <div class="lg:grid lg:grid-cols-12 lg:gap-x-5">
         <div class="space-y-6 sm:px-6 lg:col-span-12 lg:px-0">
-          <form @submit.prevent="createStudent()">
+          <form @submit.prevent="updateStudent()">
             <div class="shadow sm:overflow-hidden sm:rounded-md">
               <div class="space-y-6 bg-white px-4 py-6 sm:p-6">
                 <div>
@@ -164,17 +172,17 @@ watch(
                 </div>
               </div>
               <div class="bg-gray-50 px-4 py-3 text-right sm:px-6">
-                <a
-                  href="#"
+                <Link
+                  :href="route('students.index')"
                   class="mr-4 inline-flex items-center rounded-md border border-transparent bg-indigo-100 px-4 py-2 text-sm font-medium text-indigo-700 hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
                 >
                   Cancel
-                </a>
+                </Link>
                 <button
                   type="submit"
                   class="inline-flex justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
                 >
-                  Save
+                  Update
                 </button>
               </div>
             </div>

@@ -18,7 +18,7 @@ class ClassesFactory extends Factory
     public function definition(): array
     {
         return [
-            'name' => 'Class' . $this->faker->randomNumber(),
+            'name' => 'Class ' . $this->faker->randomNumber(),
         ];
     }
 }

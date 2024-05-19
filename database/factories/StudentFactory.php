@@ -19,9 +19,14 @@ class StudentFactory extends Factory
      */
     public function definition(): array
     {
+        $class = Classes::factory()->create();
+        $section = Section::factory()->create([
+            'class_id' => $class->id,
+        ]);
+
         return [
-            'class_id' => Classes::factory(),
-            'section_id' => Section::factory(),
+            'class_id' => $class->id,
+            'section_id' => $section->id,
             'name' => $this->faker->name(),
             'email' => $this->faker->unique()->email(),
         ];
