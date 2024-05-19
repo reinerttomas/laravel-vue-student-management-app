@@ -1,5 +1,5 @@
 <script setup>
-import { Head, Link } from '@inertiajs/vue3';
+import { Head, Link, useForm } from '@inertiajs/vue3';
 import { Search } from 'lucide-vue-next';
 import { formatDate } from '@vueuse/core';
 import Pagination from '@/Components/Pagination.vue';
@@ -11,6 +11,13 @@ defineProps({
     required: true,
   },
 });
+
+const deleteForm = useForm({});
+const deleteStudent = (id) => {
+  if (confirm('Are you sure you want to delete this student?')) {
+    deleteForm.delete(route('students.destroy', id));
+  }
+};
 </script>
 
 <template>
@@ -165,6 +172,7 @@ defineProps({
                             Edit
                           </Link>
                           <button
+                            @click="deleteStudent(student.id)"
                             class="ml-2 text-indigo-600 hover:text-indigo-900"
                           >
                             Delete

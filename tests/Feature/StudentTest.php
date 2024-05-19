@@ -152,3 +152,20 @@ test('can update student', function () {
     $this->assertDatabaseCount(Student::class, 1);
     $this->assertDatabaseHas(Student::class, $dataForUpdate);
 });
+
+test('can delete student', function () {
+    $user = User::factory()->create();
+    $student = Student::factory()->create();
+
+    $this->assertDatabaseCount(Student::class, 1);
+    $this->assertDatabaseHas(Student::class, $student->toArray());
+
+    $this
+        ->followingRedirects()
+        ->actingAs($user)
+        ->delete(route('students.destroy', $student->id))
+        ->assertOk()
+        ->assertInertia(fn (Assert $page) => $page->component('Student/Index'));
+
+    $this->assertDatabaseCount(Student::class, 0);
+});
