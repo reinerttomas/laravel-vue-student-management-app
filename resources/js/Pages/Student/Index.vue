@@ -1,9 +1,10 @@
 <script setup>
-import { Head, Link, useForm } from '@inertiajs/vue3';
+import { Head, Link, router, useForm, usePage } from '@inertiajs/vue3';
 import { Search } from 'lucide-vue-next';
 import { formatDate } from '@vueuse/core';
 import Pagination from '@/Components/Pagination.vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
+import { computed, ref, watch } from 'vue';
 
 defineProps({
   students: {
@@ -12,7 +13,40 @@ defineProps({
   },
 });
 
+const pageNumber = ref(1);
+const searchTerm = ref(usePage().props.search ?? '');
+
+const pageNumberUpdated = (link) => {
+  const url = new URL(link);
+  const urlParams = new URLSearchParams(url.search);
+
+  pageNumber.value = urlParams.get('page');
+};
+
+const studentsUrl = computed(() => {
+  const url = new URL(route('students.index'));
+  url.searchParams.append('page', pageNumber.value);
+
+  if (searchTerm.value) {
+    url.searchParams.append('search', searchTerm.value);
+  }
+
+  return url;
+});
+
+watch(
+  () => studentsUrl.value,
+  (newValue) => {
+    router.visit(newValue, {
+      preserveScroll: true,
+      preserveState: true,
+      replace: true,
+    });
+  }
+);
+
 const deleteForm = useForm({});
+
 const deleteStudent = (id) => {
   if (confirm('Are you sure you want to delete this student?')) {
     deleteForm.delete(route('students.destroy', id));
@@ -62,6 +96,7 @@ const deleteStudent = (id) => {
               </div>
 
               <input
+                v-model="searchTerm"
                 type="text"
                 placeholder="Search students data..."
                 id="search"
@@ -182,7 +217,10 @@ const deleteStudent = (id) => {
                     </tbody>
                   </table>
                 </div>
-                <Pagination :meta="students.meta" />
+                <Pagination
+                  :meta="students.meta"
+                  :pageNumberUpdated="pageNumberUpdated"
+                />
               </div>
             </div>
           </div>

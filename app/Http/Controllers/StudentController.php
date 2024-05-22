@@ -5,24 +5,27 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Data\StoreStudentData;
+use App\Data\StudentListData;
 use App\Data\UpdateStudentData;
 use App\Http\Requests\UpdateStudentRequest;
 use App\Http\Resources\ClassesResource;
 use App\Http\Resources\StudentResource;
 use App\Models\Classes;
 use App\Models\Student;
+use App\Scope\SearchStudentsByNameTap;
 use Illuminate\Http\RedirectResponse;
 use Inertia\Inertia;
 use Inertia\Response;
 
 class StudentController extends Controller
 {
-    public function index(): Response
+    public function index(StudentListData $data): Response
     {
-        $students = StudentResource::collection(Student::paginate(10));
+        $query = Student::query()->tap(new SearchStudentsByNameTap($data->search));
 
         return Inertia::render('Student/Index', [
-            'students' => $students,
+            'students' => StudentResource::collection($query->paginate(10)),
+            'search' => $data->search ?: '',
         ]);
     }
 
